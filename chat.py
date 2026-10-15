@@ -1,7 +1,18 @@
-import ollama # Ollama ile konuşmamızı sağlayan kütüphaneyi içeri alıyoruz
+import ollama  # Ollama ile konuşmamızı sağlayan kütüphane
 
-cevap = ollama.chat(  # Modele mesaj gönderiyoruz, gelen cevap "cevap" değişkenine kaydoluyor
-    model="qwen3:14b", # Hangi modelle konuşacağımız.
-    messages=[{"role": "user", "content": "Merhaba, kendini tanıt."}],# Modele gönderdiğimiz konuşma.
-)
-print(cevap.message.content) # Modelin cevabını ekrana yazdırıyoruz
+messages = []  # Konuşma geçmişi burada tutulur, başta boş
+
+while True:  # "q" yazana kadar sürekli döner
+    kullanici = input("Sen: ")  # Klavyeden mesaj al
+
+    if kullanici == "q":  # "q" yazılırsa döngüden çık
+        break
+
+    messages.append({"role": "user", "content": kullanici})  # Mesajımızı geçmişe ekle
+
+    cevap = ollama.chat(model="qwen3:14b", messages=messages)  # Bütün geçmişi modele gönder
+
+    model_cevabi = cevap.message.content  # Modelin yazdığı metni al
+    print("Asistan:", model_cevabi)  # Ekrana yazdır
+
+    messages.append({"role": "assistant", "content": model_cevabi})  # Cevabı da geçmişe ekle
