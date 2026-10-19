@@ -6,7 +6,8 @@ __pycache__/
 # Gizli ayarlar ve anahtarlar
 .env
 credentials.json
-token.json
+token_gmail.json
+token_calendar.json
 
 # Kişisel veriler
 notlar.json
