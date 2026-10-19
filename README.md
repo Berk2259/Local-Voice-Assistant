@@ -12,6 +12,9 @@ Mail, takvim ve notlarınla ilgilenen, sesle konuşabildiğin bir asistan yapmak
 - [x] Yerel modelle (Qwen3 14B) Python'dan konuşma
 - [x] Modelin araç çağırması (tool calling)
 - [x] Araç kullanan ajan döngüsü
+- [x] Araçları `tools/` paketi altında modüler yapıya taşıma
+- [x] Not alma aracı (not_ekle, notlari_listele)
+- [x] Uygulama açma aracı (uygulama_ac)
 
 ## Ekran Görüntüleri
 
