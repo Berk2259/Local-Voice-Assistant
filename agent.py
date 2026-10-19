@@ -1,12 +1,11 @@
-from datetime import datetime  # Tarih ve saat işlemleri için hazır Python modülü
 import ollama
+from tools import ARACLAR
+import os
+import re
+from dotenv import load_dotenv
 
-#Anlık Gün ve Saati getiren fonksiyon
-def saat_getir() -> str:
-    """Şu anki tarih ve saati döndürür. Kullanıcı saat veya tarih sorarsa bu aracı kullan.""" #Bu kısım python fonksiyonlarındaki docstring kısmı model bu fonksiyonu çağıracağı zaman bu kısmı okur
-    return datetime.now().strftime("%Y-%m-%d %H:%M")
-
-ARACLAR = {"saat_getir": saat_getir}  # Araç adı -> fonksiyon eşleşmesi
+load_dotenv()
+MODEL = os.getenv("OLLAMA_MODEL", "qwen3:14b")
 
 
 def arac_calistir(arac_cagrisi):  # Modelin istediği aracı bulup çalıştırır
@@ -21,7 +20,7 @@ def arac_calistir(arac_cagrisi):  # Modelin istediği aracı bulup çalıştır�
 def cevap_uret(messages):  # Model nihai cevabı verene kadar araç çağırıp sonuçları geri verir
     while True:  # Model araç istemeyi bırakana kadar döner
         cevap = ollama.chat(
-            model="qwen3:14b",
+            model=MODEL,
             messages=messages,
             tools=list(ARACLAR.values()),  # Sözlükteki bütün araçları modele ver
             think=False,
@@ -29,7 +28,10 @@ def cevap_uret(messages):  # Model nihai cevabı verene kadar araç çağırıp 
         messages.append(cevap.message)  # Modelin mesajını geçmişe ekle
 
         if not cevap.message.tool_calls:  # Araç istemediyse cevap hazır demektir
-            return cevap.message.content
+            icerik = cevap.message.content
+            if "</think>" in icerik:  # Model düşünme bloğunu kapanış etiketiyle sızdırdıysa
+                icerik = icerik.split("</think>", 1)[1]  # Kapanış etiketinden sonrasını al, öncesini (muhakemeyi) at
+            return icerik.strip()
 
         for arac_cagrisi in cevap.message.tool_calls:  # Araç istediyse hepsini çalıştır
             sonuc = arac_calistir(arac_cagrisi)
