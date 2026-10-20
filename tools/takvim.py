@@ -6,7 +6,12 @@ SCOPES = ["https://www.googleapis.com/auth/calendar"]  # Hem okuma hem etkinlik 
 ZAMAN_DILIMI = "Europe/Istanbul"  # Etkinlik saatlerini doğru gösterebilmek için
 
 def etkinlik_ekle(baslik: str, tarih: str, saat: str, sure_dakika: int = 60) -> str:  # Modelin çağıracağı araç: takvime yeni etkinlik ekler
-    """Google Takvim'e yeni bir etkinlik ekler. tarih 'YYYY-MM-DD', saat 'HH:MM' formatında olmalı. Kullanıcı takvime bir şey eklemeni istediğinde bu aracı kullan."""
+    """
+    Google Takvim'e yeni bir etkinlik ekler. tarih 'YYYY-MM-DD', saat 'HH:MM' formatında olmalı.
+    Kullanıcı takvime bir şey eklemeni istediğinde bu aracı kullan.
+    ÖNEMLİ: Kullanıcı 'yarın', 'bugün', 'gelecek hafta' gibi göreceli bir tarih ifadesi kullandıysa,
+    bu aracı çağırmadan ÖNCE mutlaka saat_getir aracını çağırıp güncel tarihi öğren ve ona göre hesapla.
+    """
     kimlik = servis_al(SCOPES, "token_calendar.json")  # İzin al / kaydedilmiş token'ı kullan
     servis = build("calendar", "v3", credentials=kimlik)  # Calendar API bağlantısını kur
 

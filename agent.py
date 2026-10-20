@@ -44,7 +44,17 @@ def cevap_uret(messages):  # Model nihai cevabı verene kadar araç çağırıp 
                 }
             )
 
-messages = []  # Konuşma geçmişi, başta boş
+messages = [
+    {
+        "role": "system",
+        "content": (
+            "Sen kullanıcının kişisel asistanısın. Tarih veya saatle ilgili her işlemde, "
+            "özellikle kullanıcı 'yarın', 'bugün', 'bu akşam', 'gelecek hafta' gibi göreceli "
+            "bir ifade kullandığında, ASLA tarihi tahmin etme. Önce mutlaka saat_getir aracını "
+            "çağırıp güncel tarih ve saati öğren, sonra hesaplamanı ona göre yap."
+        ),
+    }
+]
 
 while True:  # "q" yazana kadar sürekli döner
     kullanici = input("Sen: ")  # Klavyeden mesaj al
