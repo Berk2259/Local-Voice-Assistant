@@ -3,7 +3,8 @@ from tools import ARACLAR
 import os
 import re
 from dotenv import load_dotenv
-from ses import dinle, konus
+from ses import dinle, konus, uyandirma_kelimesi_bekle
+
 
 load_dotenv()
 MODEL = os.getenv("OLLAMA_MODEL", "qwen3:14b")
@@ -58,6 +59,10 @@ messages = [
 ]
 
 while True:
+    print("'Hey Jarvis' diyerek beni uyandırabilirsin...")
+    uyandirma_kelimesi_bekle()
+    print("Seni dinliyorum!")
+
     kullanici = dinle()
     print("Sen:", kullanici)
 

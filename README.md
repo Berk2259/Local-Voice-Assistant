@@ -21,6 +21,7 @@ Mail, takvim ve notlarınla ilgilenen, sesle konuşabildiğin bir asistan yapmak
 - [x] Sesli giriş — Speech-to-Text (faster-whisper, yerel)
 - [x] Sesli çıkış — Text-to-Speech (piper, yerel, Türkçe)
 - [x] Mikrofon → model → sesli cevap tam döngüsü (ses.py + agent.py entegrasyonu)
+- [x] Wake word ("Hey Jarvis") ile pasif dinleme — openwakeword
 
 ## Geliştirme Süreci
 
@@ -53,6 +54,8 @@ Projenin nasıl adım adım geliştiğinin kısa özeti:
 13. Test edilen STT ve TTS mantığı, kalıcı bir modül olan `ses.py` içine taşındı. İki fonksiyon tanımlandı: `dinle()` — mikrofondan kayıt alıp metne çevirir; `konus(metin)` — verilen metni Türkçe sese çevirip hoparlörden çalar. Performans için model nesneleri (Whisper ve Piper) dosya yüklenirken bir kez oluşturulacak şekilde ayarlandı, her çağrıda yeniden yüklenmeyecek şekilde yapılandırıldı.
 
 14. `ses.py`'deki `dinle()` ve `konus()` fonksiyonları `agent.py`'nin ana döngüsüne bağlandı: klavyeden okuma yerine mikrofondan dinleme, ekrana yazma yanında sesli okuma eklendi. Sistem uçtan uca test edildi — mikrofona söylenen bir istek metne çevrildi, modele iletildi, gerektiğinde araç (mail, takvim, not vb.) kullanılarak bir cevap üretildi ve bu cevap hem ekrana yazıldı hem sesli olarak okundu. Böylece proje, tamamen metin tabanlı bir asistandan, sesli konuşulabilen bir asistana dönüştü.
+
+15. "Jarvis" deneyimine yaklaşmak için wake word (uyandırma kelimesi) desteği eklendi. `openwakeword` kütüphanesi ile hazır bir "Hey Jarvis" modeli kullanılarak, asistanın sürekli aktif dinlemek yerine bu kelime söylenene kadar pasif beklemesi, kelime algılandığında asıl dinleme moduna geçmesi sağlandı. Mikrofonla uçtan uca test edildi: asistan sessizce bekledi, "Hey Jarvis" denince tetiklendi, ardından konuşulan istek doğru şekilde işlendi.
 
 ## Ekran Görüntüleri
 
@@ -99,3 +102,4 @@ Model, `etkinlik_ekle` ile Google Takvim'e yeni bir etkinlik ekliyor, `yaklasan_
 - Google Calendar API
 - faster-whisper (Speech-to-Text, yerel)
 - Piper (Text-to-Speech, yerel, Türkçe)
+- openwakeword (wake word tespiti, yerel)
