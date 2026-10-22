@@ -3,6 +3,7 @@ from tools import ARACLAR
 import os
 import re
 from dotenv import load_dotenv
+from ses import dinle, konus
 
 load_dotenv()
 MODEL = os.getenv("OLLAMA_MODEL", "qwen3:14b")
@@ -56,13 +57,15 @@ messages = [
     }
 ]
 
-while True:  # "q" yazana kadar sürekli döner
-    kullanici = input("Sen: ")  # Klavyeden mesaj al
+while True:
+    kullanici = dinle()
+    print("Sen:", kullanici)
 
-    if kullanici == "q":  # "q" yazılırsa çık
+    if kullanici.strip().lower() == "çık":
         break
 
-    messages.append({"role": "user", "content": kullanici})  # Mesajımızı geçmişe ekle
+    messages.append({"role": "user", "content": kullanici})
 
-    cevap = cevap_uret(messages)  # Model gerekirse araç çağırır, sonunda cevabı verir
+    cevap = cevap_uret(messages)
     print("Asistan:", cevap)
+    konus(cevap)
