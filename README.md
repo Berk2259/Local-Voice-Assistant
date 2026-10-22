@@ -22,6 +22,7 @@ Mail, takvim ve notlarınla ilgilenen, sesle konuşabildiğin bir asistan yapmak
 - [x] Sesli çıkış — Text-to-Speech (piper, yerel, Türkçe)
 - [x] Mikrofon → model → sesli cevap tam döngüsü (ses.py + agent.py entegrasyonu)
 - [x] Wake word ("Hey Jarvis") ile pasif dinleme — openwakeword
+- [x] Sessizlik algılama (VAD) ile otomatik dinleme durdurma — sabit süre yerine konuşma bitince otomatik durma
 
 ## Geliştirme Süreci
 
@@ -56,6 +57,8 @@ Projenin nasıl adım adım geliştiğinin kısa özeti:
 14. `ses.py`'deki `dinle()` ve `konus()` fonksiyonları `agent.py`'nin ana döngüsüne bağlandı: klavyeden okuma yerine mikrofondan dinleme, ekrana yazma yanında sesli okuma eklendi. Sistem uçtan uca test edildi — mikrofona söylenen bir istek metne çevrildi, modele iletildi, gerektiğinde araç (mail, takvim, not vb.) kullanılarak bir cevap üretildi ve bu cevap hem ekrana yazıldı hem sesli olarak okundu. Böylece proje, tamamen metin tabanlı bir asistandan, sesli konuşulabilen bir asistana dönüştü.
 
 15. "Jarvis" deneyimine yaklaşmak için wake word (uyandırma kelimesi) desteği eklendi. `openwakeword` kütüphanesi ile hazır bir "Hey Jarvis" modeli kullanılarak, asistanın sürekli aktif dinlemek yerine bu kelime söylenene kadar pasif beklemesi, kelime algılandığında asıl dinleme moduna geçmesi sağlandı. Mikrofonla uçtan uca test edildi: asistan sessizce bekledi, "Hey Jarvis" denince tetiklendi, ardından konuşulan istek doğru şekilde işlendi.
+
+16. Sabit süreli (5 saniye) mikrofon dinleme, konuşmanın doğal akışına uymadığı için kaldırıldı. Yerine enerji tabanlı basit bir sessizlik algılama (VAD) mantığı eklendi: kayıt, konuşma başladığında devam ediyor, belirli bir süre sessizlik algılanınca otomatik olarak duruyor (güvenlik için bir üst süre sınırı da var). Kısa ve uzun cümlelerle test edildi, ikisinde de doğru şekilde çalıştığı doğrulandı.
 
 ## Ekran Görüntüleri
 

@@ -22,13 +22,42 @@ def uyandirma_kelimesi_bekle(esik: float = 0.5) -> None:
                 _wakeword_modeli.reset()  # aynı tetiklemenin tekrar sayılmaması için
                 return
 
-def dinle() -> str:
-    """Mikrofondan SURE saniye kayıt alır, metne çevirip döndürür."""
-    print(f"{SURE} saniye boyunca konuş...")
-    kayit = sd.rec(int(SURE * ORNEKLEME_HIZI), samplerate=ORNEKLEME_HIZI, channels=1, dtype="float32")
-    sd.wait()
+PENCERE_SURESI = 0.03  # her parçanın süresi (saniye)
+PENCERE = int(ORNEKLEME_HIZI * PENCERE_SURESI)
+SES_ESIGI = 0.02  # bu seviyenin üstü "konuşma" sayılır
+SESSIZLIK_SINIRI = 1.2  # bu kadar saniye sessizlik olursa dur
+MAKS_SURE = 15  # güvenlik için üst sınır (saniye)
 
-    audio = kayit.flatten()
+def dinle() -> str:
+    """Konuşma başlayınca kayda başlar, sessizlik algılanınca durur, metne çevirip döndürür."""
+    print("Dinliyorum...")
+
+    parcalar = []
+    konusma_basladi = False
+    sessiz_parca_sayisi = 0
+    sessizlik_limiti = int(SESSIZLIK_SINIRI / PENCERE_SURESI)
+    maks_parca_sayisi = int(MAKS_SURE / PENCERE_SURESI)
+
+    with sd.InputStream(samplerate=ORNEKLEME_HIZI, channels=1, dtype="float32") as stream:
+        for _ in range(maks_parca_sayisi):
+            parca, _ = stream.read(PENCERE)
+            parca = parca.flatten()
+            enerji = np.sqrt(np.mean(parca ** 2))
+
+            if enerji > SES_ESIGI:
+                konusma_basladi = True
+                sessiz_parca_sayisi = 0
+                parcalar.append(parca)
+            elif konusma_basladi:
+                sessiz_parca_sayisi += 1
+                parcalar.append(parca)
+                if sessiz_parca_sayisi > sessizlik_limiti:
+                    break
+
+    if not parcalar:
+        return ""
+
+    audio = np.concatenate(parcalar)
     segments, _ = _model.transcribe(audio, language="tr")
     return " ".join(segment.text for segment in segments).strip()
 
